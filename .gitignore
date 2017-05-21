@@ -1,0 +1,6 @@
+nohup.out
+lib
+migrations
+*.pyc
+.idea
+.*
