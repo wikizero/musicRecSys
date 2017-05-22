@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %} music {% endblock %}
+{% block head %}
+    <link href="{% static 'recSys/css/components/search.almost-flat.min.css' %}" rel="stylesheet" type="text/css">
+    <script src="{% static 'recSys/js/components/grid.min.js' %}" xmlns="http://www.w3.org/1999/html"></script>
+    <script src="{% static 'recSys/js/components/search.min.js' %}" xmlns="http://www.w3.org/1999/html"></script>
+    <style>
+        .content {
+            width: 800px;
+            margin: 20px auto;
+        }
+
+        .control {
+            margin-left: 48px;
+        }
+    </style>
+    <script>
+        $(function () {
+
+
+        })
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <table class="uk-table dislike">
+            <p style="font-size: 16px; margin-top: 40px; margin-bottom: 8px;">不喜欢的</p>
+            <thead>
+            <tr style="border-top: 1px solid #e5e5e5">
+                <th>音乐</th>
+                <th>类型</th>
+                <th>语言</th>
+                <th>移除</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for m in dislike %}
+                <tr>
+                    <td><a href="/movie/detail?id={{ m.douban_id }}">{{ m.film_name }}
+                        <span style="color: #888"> ( {{ m.year }} )</span></a></td>
+                    <td>{{ m.music_id }}</td>
+                    <td>{{ m.language }}</td>
+                    <td><a class="delete" data="{{ m.douban_id }}" ><i class="uk-icon-small uk-icon-close"></i></a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

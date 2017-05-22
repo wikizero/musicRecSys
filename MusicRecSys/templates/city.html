@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %} music {% endblock %}
+{% block head %}
+    <link href="{% static 'recSys/css/components/search.almost-flat.min.css' %}" rel="stylesheet" type="text/css">
+    <script src="{% static 'recSys/js/components/grid.min.js' %}" xmlns="http://www.w3.org/1999/html"></script>
+    <script src="{% static 'recSys/js/components/search.min.js' %}" xmlns="http://www.w3.org/1999/html"></script>
+    <style>
+        .content {
+            width: 800px;
+            margin: 20px auto;
+        }
+
+        .control {
+            margin-left: 48px;
+        }
+    </style>
+    <script>
+        $(function () {
+
+            function getMid() {
+                mid = $('iframe').attr('src').split('&')[1].replace('id=', '')
+                return mid
+            }
+
+            function setColor(id) {
+                icon = $("[data-id='" + id + "'] i")
+                $('.play-icon').addClass('uk-icon-play').removeClass('uk-icon-stop').css('color', '#444')
+                icon.addClass('uk-icon-stop').removeClass('uk-icon-play').css('color', 'red')
+            }
+
+            function changeMusic(id, play) {
+                attr = '//music.163.com/outchain/player?type=2&id=' + id + '&auto=' + play + '&height=66'
+                $('iframe').attr('src', attr)
+            }
+
+            $('.like').click(function () {
+                mid = getMid()
+                $.ajax({
+                    type: 'post',
+                    url: '/operate',
+                    data: {
+                        'mid': mid,
+                        'type': 'like'
+                    },
+                    success: function (msg) {
+                        UIkit.notify(msg.msg, {status: msg.type, timeout: 1500});
+                    }
+                })
+
+            })
+            {#            function getBackMid() {  // 后去后台music id#}
+            {#                mid = ''#}
+            {#                $.ajax({#}
+            {#                    type: 'post',#}
+            {#                    url: '/city',#}
+            {#                    data: {#}
+            {#                        's': '英文',#}
+            {#                    },#}
+            {#                    success: function (msg) {#}
+            {#                       return msg.id#}
+            {#                    }#}
+            {#                })#}
+            {##}
+            {#            }#}
+
+            $('.next').click(function () {
+                UIkit.notify('下一首歌正在加载中...', {status: 'success', timeout: 1500});
+                play = 1
+                $.ajax({
+                    type: 'post',
+                    url: '/city',
+                    data: {
+                        's': '英文'
+                    },
+                    success: function (msg) {
+                        changeMusic(msg.id, play)
+                    }
+                })
+            })
+            $('.dislike').click(function () {
+                play = 1
+                mid = getMid()
+                $.ajax({
+                    type: 'post',
+                    url: '/operate',
+                    data: {
+                        'mid': mid,
+                        'type': 'dislike'
+                    },
+                    success: function (msg) {
+                        UIkit.notify(msg.msg, {status: msg.type, timeout: 1500});
+                        setTimeout(function () {
+
+                            $.ajax({
+                                type: 'post',
+                                url: '/city',
+                                data: {
+                                    's': '英文'
+                                },
+                                success: function (msg) {
+                                    changeMusic(msg.id, play)
+                                }
+                            })
+
+                        }, 1000)
+                    }
+                })
+            })
+
+            $('.play').click(function () {
+                id = $(this).attr('data-id')
+                play = 1
+                changeMusic(id, play)
+                setColor(id)
+            })
+        })
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="content">
+        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=106
+                src="//music.163.com/outchain/player?type=2&id=29966565&auto=0&height=66"></iframe>
+
+        <div>
+            <a class="uk-icon-button uk-icon-heart-o control like"></a>
+            <a class="uk-icon-button uk-icon-trash-o control dislike"></a>
+            <a class="uk-icon-button uk-icon-step-forward control next"></a>
+        </div>
+
+
+        <form class="uk-search" action="/city" data-uk-search style="float: right; margin-bottom: 20px">
+            <input class="uk-search-field" type="search" placeholder="搜索歌曲..." id="s" , name="s">
+        </form>
+
+        <table class="uk-table" style="margin-bottom: 50px">
+            <caption>"{{ find_str }}"搜索结果 &nbsp;<span style="color: #ff8984">由于版权问题，可能会有些歌曲无法播放！</span></caption>
+            <thead>
+            <tr>
+                <th style="width: 40px; text-align: center">序号</th>
+                <th>歌名</th>
+                <th>歌手</th>
+                <th>专辑</th>
+                <th style="text-align: center; width: 40px">播放</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for s in songs %}
+
+                <tr>
+                    <td style="text-align: center">{{ forloop.counter }}</td>
+                    <td>{{ s.name }}</td>
+                    <td><a href="/city?s={{ s.artists.0.name }}">{{ s.artists.0.name }}</a></td>
+                    <td><a href="/city?s={{ s.album.name }}">{{ s.album.name }}</a></td>
+                    <td class="play" style="text-align: center;font-size: 10px;cursor: pointer" data-id="{{ s.id }}"><i
+                            class="play-icon uk-icon-play uk-icon-medium"></i></td>
+
+                </tr>
+
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
