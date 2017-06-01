@@ -15,7 +15,7 @@ from datetime import datetime
 # Create your views here.
 
 # http://s.music.163.com/search/get/?type=1&limit=10&s=%E5%95%8A%E5%93%88%E5%93%88
-
+# 获取歌曲详情 http://music.163.com/api/song/detail/?id=30953009&ids=%5B30953009%5D
 
 @csrf_exempt
 def city(request):
@@ -31,7 +31,7 @@ def city(request):
 		response = requests.post(url='http://music.163.com/api/search/get/', params=payload)
 		data = response.json()
 		for i in data['result']['songs']:
-			print i['id']
+			print i
 			print '-'*100
 
 		data = {
@@ -50,6 +50,7 @@ def city(request):
 		}
 		response = requests.post(url='http://music.163.com/api/search/get/', params=payload)
 		data = response.json()
+
 		id_lst = []
 		for i in data['result']['songs']:
 			id_lst.append(i['id'])

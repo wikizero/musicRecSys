@@ -1,19 +1,17 @@
 # coding:utf-8
-import numpy as np
+import md5
 
-s = [
-	 [[62, 672, 62],
-	  [463, 46, 46],
-	  [32, 342, 32]],
+def encrypted_id(id):
+    byte1 = bytearray('3go8&$8*3*3h0k(2)2')
+    byte2 = bytearray(id)
+    byte1_len = len(byte1)
+    for i in xrange(len(byte2)):
+        byte2[i] = byte2[i]^byte1[i%byte1_len]
+    m = md5.new()
+    m.update(byte2)
+    result = m.digest().encode('base64')[:-1]
+    result = result.replace('/', '_')
+    result = result.replace('+', '-')
+    return result
 
-	 [[556, 56, 536],
-	  [43, 433, 43],
-	  [21, 241, 261]],
-
-	 [[576, 56, 56],
-	  [43, 433, 43],
-	  [201, 251, 21]],
-	]
-
-
-print u'\u5468\u6770\u4f26\u7684\u5e8a\u8fb9\u6545\u4e8b'
+print encrypted_id(4154790)

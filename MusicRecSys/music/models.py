@@ -11,6 +11,9 @@ user:username ,pw
 class Music(models.Model):
     user = models.ForeignKey(User)
     music_id = models.IntegerField()
+    name = models.CharField(max_length=100)
+    singer = models.CharField(max_length=50)
+    album = models.CharField(max_length=50)
     type = models.BooleanField(default=True)  # True like /  False dislike
 
     def __unicode__(self):
