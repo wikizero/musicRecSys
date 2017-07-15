@@ -7,7 +7,7 @@
     <script src="{% static 'recSys/js/components/search.min.js' %}" xmlns="http://www.w3.org/1999/html"></script>
     <style>
         .content {
-            width: 800px;
+            width: 900px;
             margin: 20px auto;
         }
 
@@ -17,13 +17,52 @@
     </style>
     <script>
         $(function () {
-
+            $('.delete').click(function(){
+                mid = $(this).attr('data')
+                 $.ajax({
+                    type: 'post',
+                    url: '/list',
+                    data: {
+                        'mid': mid,
+                    },
+                    success: function (msg) {
+                        UIkit.notify(msg.msg, {status: msg.type, timeout: 1500});
+                        setTimeout(function () {
+                            window.location.href = '/list'
+                        }, 1000)
+                    }
+                })
+            })
 
         })
     </script>
 {% endblock %}
 
 {% block content %}
+    <div class="content">
+        <table class="uk-table dislike">
+            <p style="font-size: 16px; margin-top: 40px; margin-bottom: 8px;">我喜欢的</p>
+            <thead>
+            <tr style="border-top: 1px solid #e5e5e5">
+                <th>歌名</th>
+                <th>歌手</th>
+                <th>专辑</th>
+                <th>移除</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for m in like %}
+                <tr>
+                    <td>{{ m.name }}</td>
+                    <td><a href="/city?s={{ m.singer }}">{{ m.singer }}</a></td>
+                    <td><a href="/city?s={{ m.album }}">{{ m.album }}</a></td>
+                    <td><a class="delete" data="{{ m.music_id }}" ><i class="uk-icon-small uk-icon-close"></i></a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
     <div class="content">
         <table class="uk-table dislike">
             <p style="font-size: 16px; margin-top: 40px; margin-bottom: 8px;">不喜欢的</p>
@@ -38,11 +77,10 @@
             <tbody>
             {% for m in dislike %}
                 <tr>
-                    <td><a href="/movie/detail?id={{ m.douban_id }}">{{ m.film_name }}
-                        <span style="color: #888"> ( {{ m.year }} )</span></a></td>
-                    <td>{{ m.music_id }}</td>
-                    <td>{{ m.language }}</td>
-                    <td><a class="delete" data="{{ m.douban_id }}" ><i class="uk-icon-small uk-icon-close"></i></a></td>
+                    <td>{{ m.name }}</td>
+                    <td>{{ m.singer }}</td>
+                    <td>{{ m.album }}</td>
+                    <td><a class="delete" data="{{ m.music_id }}" ><i class="uk-icon-small uk-icon-close"></i></a></td>
                 </tr>
             {% endfor %}
             </tbody>
