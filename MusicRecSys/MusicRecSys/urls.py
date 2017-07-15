@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^logout', views.sign_out),
     url(r'^operate', views.operate),
     url(r'^list', views.list),
+    url(r'^toolkits', views.toolkits),
 ]

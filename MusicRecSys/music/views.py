@@ -2,6 +2,7 @@
 from django.shortcuts import render, HttpResponse, redirect
 import requests
 from models import *
+import pdfkit
 import random
 import json
 import re
@@ -135,3 +136,33 @@ def list(request):
 		'dislike': dislike
 	}
 	return render(request, 'list.html', data)
+
+def toolkits(request):
+    name = request.GET.get('url', False).strip()
+    #root_dir = 'static/recSys/'
+
+    def readFile(fn, buf_size=262144):
+        f = open(fn, "rb")
+        while True:
+            c = f.read(buf_size)
+            if c:
+                yield c
+            else:
+                break
+        f.close()
+    file_name = name.split('/')[-1] if name.split('/')[-1] else name.split('/')[-2]
+    file_name += '.pdf'
+
+    options = {
+        'encoding':'UTF-8'
+    }
+
+    #pdfkit.from_url(name, file_name, options=options)
+    import os
+    command = 'wkhtmltopdf '+name+' output.pdf'
+    os.system(command)
+    response = HttpResponse(readFile('output.pdf'))
+    response['Content-Type'] = 'application/octet-stream'
+    response['Content-Disposition'] = 'attachment;filename="{0}"'.format(file_name)
+
+    return response	 
